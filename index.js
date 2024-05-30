@@ -6,10 +6,10 @@ const moment = require('moment');
 const User = require('./user'); // Ensure this path is correct
 
 const app = express();
-const PORT = process.env.PORT || 9000; 
+const PORT = process.env.PORT || 9000;
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://dk4803382:xpU7dzbTGTEBUIIK@taskproject.ulz6n1e.mongodb.net/taskproject?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://dk4803382:xpU7dzbTGTEBUIIK@taskproject.ulz6n1e.mongodb.net/taskproject?retryWrites=true&w=majority')
   .then(() => console.log('Connected to MongoDB'))
   .catch(error => console.error('Connection error:', error));
 
@@ -45,6 +45,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Listen on the provided PORT or default to 9000
 app.listen(PORT, () => {
-  console.log(`Server is running on http://127.0.0.1:${PORT}`);
+  console.log(`Server is running on ${PORT}`);
 });
