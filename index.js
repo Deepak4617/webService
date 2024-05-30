@@ -6,15 +6,12 @@ const moment = require('moment');
 const User = require('./user'); // Ensure this path is correct
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3001; // Change the port to 3001 or any other port
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://dk4803382:xpU7dzbTGTEBUIIK@taskproject.ulz6n1e.mongodb.net/taskproject?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
+mongoose.connect('mongodb+srv://dk4803382:xpU7dzbTGTEBUIIK@taskproject.ulz6n1e.mongodb.net/taskproject?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(error => console.error('Connection error:', error));
 
 // Middleware
 app.use(bodyParser.json());
