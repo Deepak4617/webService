@@ -6,7 +6,7 @@ const moment = require('moment');
 const User = require('./user'); // Ensure this path is correct
 
 const app = express();
-const PORT = process.env.PORT || 3001; // Change the port to 3001 or any other port
+const PORT = process.env.PORT || 3000; // Change the port to 3001 or any other port
 
 // MongoDB connection
 mongoose.connect('mongodb+srv://dk4803382:xpU7dzbTGTEBUIIK@taskproject.ulz6n1e.mongodb.net/taskproject?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
