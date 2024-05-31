@@ -12,14 +12,32 @@
   <form class="row g-3 needs-validation" id="userForm" novalidate style="margin-left: 8rem; margin-right: 8rem;">
     <div class="col-md-6">
       <label for="inputFirstName" class="form-label">First Name</label>
-      <input type="text" class="form-control" id="inputFirstName" name="firstName" required>
-      <div class="invalid-feedback">Please enter your first name.</div>
+      <input 
+        type="text" 
+        class="form-control" 
+        id="inputFirstName" 
+        name="firstName" 
+        pattern="^[a-zA-Z\s]+$" 
+        required 
+        onInput="this.value = this.value.replace(/[0-9]/g, '')"
+      />
+      <div class="invalid-feedback">Please enter a valid first name (letters and spaces only).</div>
     </div>
+    
     <div class="col-md-6">
       <label for="inputLastName" class="form-label">Last Name</label>
-      <input type="text" class="form-control" id="inputLastName" name="lastName" required>
-      <div class="invalid-feedback">Please enter your last name.</div>
+      <input 
+        type="text" 
+        class="form-control" 
+        id="inputLastName" 
+        name="lastName" 
+        pattern="^[a-zA-Z\s]+$" 
+        required 
+        onInput="this.value = this.value.replace(/[0-9]/g, '')"
+      />
+      <div class="invalid-feedback">Please enter a valid last name (letters and spaces only).</div>
     </div>
+        
     <div class="col-md-6">
       <label for="inputMobileNo" class="form-label">Mobile No.</label>
       <input type="text" class="form-control" id="inputMobileNo" name="mobileNo" pattern="\d{10}" required>
@@ -42,13 +60,17 @@
     </div>
     <div class="col-md-6">
       <label for="inputState" class="form-label">State</label>
-      <input type="text" class="form-control" id="inputState" name="address[state]" required>
-      <div class="invalid-feedback">Please enter your state.</div>
+      <input type="text" class="form-control" id="inputState" name="address[state]"  pattern="^[a-zA-Z\s]+$" required
+      onInput="this.value = this.value.replace(/[0-9]/g, '')"
+      >
+      <div class="invalid-feedback">Please enter a valid state (letters and spaces only).</div>
     </div>
     <div class="col-md-6">
       <label for="inputCountry" class="form-label">Country</label>
-      <input type="text" class="form-control" id="inputCountry" name="address[country]" required>
-      <div class="invalid-feedback">Please enter your country.</div>
+      <input type="text" class="form-control" id="inputCountry" name="address[country]" pattern="^[a-zA-Z\s]+$" required
+      onInput="this.value = this.value.replace(/[0-9]/g, '')"
+      >
+      <div class="invalid-feedback">Please enter a valid country (letters and spaces only).</div>
     </div>
     <div class="col-md-6">
       <label for="inputLoginId" class="form-label">Login ID</label>
@@ -120,5 +142,4 @@
   });
 </script>
 
-</body>
-</html>
+</body
