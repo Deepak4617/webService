@@ -8,7 +8,6 @@ const User = require('./user'); // Ensure this path is correct
 const app = express();
 const PORT = 3000;
 
-
 // MongoDB connection
 mongoose.connect('mongodb+srv://dk4803382:ironman123@createuser.ockznqh.mongodb.net/?retryWrites=true&w=majority&appName=Createuser')
   .then(() => console.log('Connected to MongoDB'))
