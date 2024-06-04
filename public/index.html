@@ -40,7 +40,7 @@
         
     <div class="col-md-6">
       <label for="inputMobileNo" class="form-label">Mobile No.</label>
-      <input type="text" class="form-control" id="inputMobileNo" name="mobileNo" pattern="\d{10}" required>
+      <input type="text" class="form-control" id="inputMobileNo" name="mobileNo" pattern="\d{10}" required maxlength='10'>
       <div class="invalid-feedback">Please enter a 10-digit mobile number.</div>
     </div>
     <div class="col-md-6">
@@ -82,11 +82,14 @@
       <input type="password" class="form-control" id="inputPassword" name="password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}" required>
       <div class="invalid-feedback">Please enter a password with at least 6 characters, including one uppercase letter, one lowercase letter, and one special character.</div>
     </div>
-    <div class="col-12 text-center mt-4">
+    <div class="col-6 text-center mt-4">
       <button type="submit" class="btn btn-primary" style="width: 51rem;">Submit</button>
     </div>
     <div class="col-12 text-center mt-2">
       <button type="button" class="btn btn-secondary" id="viewDataButton" style="width: 51rem;">View Saved Data</button>
+    </div>
+    <div class="col-12 text-center mt-2">
+      <button type="button" class="btn btn-secondary" id="liveUser" style="width: 51rem;">Join Room</button>
     </div>
   </form>
 </div>
@@ -131,7 +134,14 @@
           $('#userForm').removeClass('was-validated');
         },
         error: function (error) {
-          alert('Error: ' + (error.responseJSON ? error.responseJSON.message : 'Server error'));
+          console.log(error);  // Log the error for debugging
+          let errorMessage = 'Server error';
+          if (error.responseJSON && error.responseJSON.message) {
+            errorMessage = error.responseJSON.message;
+          } else if (error.status && error.statusText) {
+            errorMessage = `Error ${error.status}: ${error.statusText}`;
+          }
+          alert('Error: ' + errorMessage);
         }
       });
     });
@@ -139,7 +149,62 @@
     $('#viewDataButton').click(function () {
       window.location.href = 'viewData.html';
     });
+    $('#liveUser').click(function () {
+      window.location.href = 'liveUser.html';
+    });
   });
 </script>
 
-</body
+<script>
+  $(document).ready(function () {
+    const socket = io();
+
+    $('#userForm').submit(function (event) {
+      event.preventDefault();
+      if (this.checkValidity() === false) {
+        event.stopPropagation();
+        return;
+      }
+
+      $.ajax({
+        type: 'POST',
+        url: '/api/users',
+        data: $(this).serialize(),
+        success: function (response) {
+          alert('User saved successfully!');
+          $('#userForm')[0].reset();
+          $('#userForm').removeClass('was-validated');
+        },
+        error: function (error) {
+          let errorMessage = 'Server error';
+          if (error.responseJSON && error.responseJSON.message) {
+            errorMessage = error.responseJSON.message;
+          } else if (error.status && error.statusText) {
+            errorMessage = `Error ${error.status}: ${error.statusText}`;
+          }
+          alert('Error: ' + errorMessage);
+        }
+      });
+    });
+
+    $('#liveUser').click(function () {
+      socket.emit('join_live_users');
+    });
+
+    socket.on('current_users', function (users) {
+      let userList = '<ul>';
+      users.forEach(user => {
+        userList += `<li>${user.email} (${user.socketId})</li>`;
+      });
+      userList += '</ul>';
+      $('#userList').html(userList);
+    });
+
+    socket.on('new_user', function (user) {
+      $('#userList').append(`<li>${user.email} (${user.name})</li>`);
+    });
+  });
+</script>
+
+</body>
+</html>

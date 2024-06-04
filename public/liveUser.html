@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Room</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .card2 {
+      position: fixed;
+      top: 10%;
+      left: 90%;
+      transform: translate(-50%, -50%);
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+    .card {
+      position: fixed;
+      top: 25%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+    .card .header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .card .content {
+      margin-bottom: 10px;
+    }
+    .buttonContainer {
+      text-align: right;
+      border: #fff;
+    }
+    .buttonContainer button {
+      margin-left: 5px;
+      background: red;
+
+    }
+    .buttonContainer button {
+      margin-left: 5px;
+      background: red;
+
+    }
+  </style>
+  <script>
+    const socket = io();
+
+    let joinedUsers = [];
+
+    const joinRoom = () => {
+      const email = document.getElementById('email').value;
+      if (email) {
+        fetch(`/api/users/${email}`)
+          .then(response => response.ok ? socket.emit('join_live_users', { email }) : showErrorCard('Email does not exist'))
+          .catch(() => showErrorCard('Error checking email'));
+      } else{
+        showErrorCard('Enter your email')
+      }
+    }
+
+    const showErrorCard = message => {
+  const card = document.createElement('div');
+  card.classList.add('card2');
+  card.innerHTML = `
+    <h4 class="content">${message}</h4>
+  `;
+  document.body.appendChild(card);
+
+  setTimeout(() => {
+    card.remove();
+  }, 2000); 
+}
+
+    socket.on('userJoined', ({ email, socketId }) => {
+      if (!joinedUsers.includes(email)) {
+        joinedUsers.push(email);
+        localStorage.setItem('liveUser', JSON.stringify({ email, socketId }));
+        window.location.href = 'userList.html';
+      } else {
+        showErrorCard('You are already joined!');
+      }
+    });
+
+  </script>
+</head>
+<body>
+
+  <div class="card" style="width: 40rem; top: 40%;">
+    <div class="mt-2 mb-3">
+      <button type="button" class="btn btn-warning" onclick="window.history.back();">Back to Form</button>
+    </div>
+    <div class="card-body">
+      <div class="container text-center">
+        <h2 class="mt-2">Enter Register Email Id</h2>
+        
+        <div class="mb-3">
+          <input type="text" class="text-center form-control" style="border-radius: 8px" id="email" placeholder="Enter your email">
+          <div class="mt-2">
+            <button class="btn btn-info text-center" type="button" onclick="joinRoom()">Join</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+ 
+</body>
+</html>

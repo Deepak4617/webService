@@ -12,8 +12,9 @@
   <h2 class="text-center mt-2 mb-4">Saved User Data</h2>
   <div id="usersList" class="mt-4"></div>
   <div class="text-center mt-4">
-    <button type="button" class="btn btn-primary" onclick="window.location.href='index.html';">Back to Form</button>
-  </div>
+    <button type="button" class="btn btn-primary" onclick="window.history.back();">Back</button>
+</div>
+
 </div>
 
 <!-- Bootstrap JS and dependencies -->
@@ -25,17 +26,21 @@
       // Fetch users from server
       function fetchUsers() {
         $.get('/api/users', function (users) {
-          var userTable = '<table class="table table-bordered"><thead><tr><th>Full Name</th><th>Email</th><th>Login Id</th><th>Adress(city)</th><th>Mobile no.</th><th>Created At</th>';
-          users.forEach(function (user) {
-            userTable += `<tr><td> ${user.firstName} ${user.lastName} </td><td> ${user.email} </td><td> ${user.loginId} </td><td> ${user.address.city} </td><td>${user.mobileNo}</td> <td> ${user.createdAt}</tr>`;
-            // userTable += '<tr><td>' + user.firstName + '</td><td>' + user.lastName + '</td></tr>';
-          });
-          userTable += '</tbody></table>';
-          $('#usersList').html(userTable);
+          if (users.length > 0) {
+            var userTable = '<table class="table table-bordered"><thead><tr><th>Full Name</th><th>Email</th><th>Login Id</th><th>Address (City)</th><th>Mobile No.</th><th>Created At</th></tr></thead><tbody>';
+            users.forEach(function (user) {
+              userTable += `<tr><td> ${user.firstName} ${user.lastName} </td><td> ${user.email} </td><td> ${user.loginId} </td><td> ${user.address.city} </td><td>${user.mobileNo}</td><td> ${user.createdAt} </td></tr>`;
+            });
+            userTable += '</tbody></table>';
+            $('#usersList').html(userTable);
+          } else {
+            $('#usersList').html('<p class="text-center">No users found.</p>');
+          }
+        }).fail(function() {
+          $('#usersList').html('<p class="text-center text-danger">Failed to fetch users data.</p>');
         });
       }
 
-      // Initial fetch
       fetchUsers();
     });
 </script>

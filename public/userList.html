@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Users</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    .card2 {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+    .card1 {
+      position: fixed;
+      top: 25%;
+      left: 85%;
+      transform: translate(-50%, -50%);
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+    .card {
+      position: fixed;
+      top: 25%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+    .card .header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .card .content {
+      margin-bottom: 10px;
+    }
+    .buttonContainer {
+      text-align: right;
+      border: #fff;
+    }
+    .buttonContainer button {
+      margin-left: 5px;
+      background: red;
+
+    }
+    .buttonContainer button {
+      margin-left: 5px;
+      background: red;
+
+    }
+    /* Your CSS styles */
+  </style>
+  <script>
+    const socket = io();
+
+    const fetchUserInfo = email => {
+      fetch(`/api/users/${email}`)
+        .then(response => response.ok ? response.json() : Promise.reject('User not found'))
+        .then(showUserDataCard)
+        .catch(error => showErrorCard(error));
+    }
+
+    const showUserDataCard = ({ email, firstName, lastName, mobileNo, address, loginId, password }) => {
+      const card = document.createElement('div');
+      card.classList.add('card1');
+      card.innerHTML = `
+        <h2 class="header">User Details</h2>
+        <p class="content">Email: ${email}</p>
+        <p class="content">Name: ${firstName} ${lastName}</p>
+        <p class="content">Mobile No: ${mobileNo}</p>
+        <p class="content">City: ${address.city}</p>
+        <p class="content">Login ID: ${loginId}</p>
+        <p class="content">Password: ${password}</p>
+        <div class="buttonContainer"><button onclick="this.parentElement.parentElement.remove()">Close</button></div>
+      `;
+      document.body.appendChild(card);
+    }
+
+    const showErrorCard = message => {
+      const card = document.createElement('div');
+      card.classList.add('card2');
+      card.innerHTML = `
+        <h2 class="content">${message}</h2>
+        <div class="buttonContainer"><button onclick="this.parentElement.parentElement.remove()">Close</button></div>
+      `;
+      document.body.appendChild(card);
+    }
+
+    const addUserToList = (email, socketId) => {
+      const userList = document.getElementById('user-list');
+      const listItem = document.createElement('div');
+      listItem.id = socketId;
+      listItem.innerHTML = `<div>Email: ${email} | Socket ID: ${socketId}</div>`;
+      listItem.querySelector('div').onclick = event => {
+        event.preventDefault();
+        fetchUserInfo(email);
+      };
+      userList.appendChild(listItem);
+    }
+
+    socket.on('current_users', users => {
+      const userList = document.getElementById('user-list');
+      userList.innerHTML = '';
+      users.forEach(({ email, socketId }) => addUserToList(email, socketId));
+    });
+
+    socket.on('userDisconnected', socketId => {
+      const userElement = document.getElementById(socketId);
+      if (userElement) userElement.remove();
+    });
+
+    window.addEventListener('load', () => {
+      const storedUser = JSON.parse(localStorage.getItem('liveUser'));
+      if (storedUser && storedUser.email && storedUser.socketId) {
+        addUserToList(storedUser.email, storedUser.socketId);
+      }
+      socket.emit('request_current_users');
+    });
+  </script>
+  
+</head>
+<body>
+
+    <div class="card" style="width: 40rem;">
+        <div class="mt-2 mb-2">
+            <button type="button" class="btn btn-info" onclick="window.history.back();">Back</button>
+        </div>
+        <div class="container">
+            <h1>Live Users</h1>
+           
+            <div id="user-list">
+    
+            </div>
+        </div>
+    </div>
+  
+</body>
+</html>
