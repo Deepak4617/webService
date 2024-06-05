@@ -11,7 +11,7 @@
     .card2 {
       position: fixed;
       top: 10%;
-      left: 90%;
+      left: 50%;
       transform: translate(-50%, -50%);
       border: 2px solid #ccc;
       padding: 20px;
@@ -47,12 +47,10 @@
     .buttonContainer button {
       margin-left: 5px;
       background: red;
-
     }
     .buttonContainer button {
       margin-left: 5px;
       background: red;
-
     }
   </style>
   <script>
@@ -66,28 +64,32 @@
         fetch(`/api/users/${email}`)
           .then(response => response.ok ? socket.emit('join_live_users', { email }) : showErrorCard('Email does not exist'))
           .catch(() => showErrorCard('Error checking email'));
-      } else{
-        showErrorCard('Enter your email')
+      } else {
+        showErrorCard('Enter your email');
       }
     }
 
     const showErrorCard = message => {
-  const card = document.createElement('div');
-  card.classList.add('card2');
-  card.innerHTML = `
-    <h4 class="content">${message}</h4>
-  `;
-  document.body.appendChild(card);
+      const card = document.createElement('div');
+      card.classList.add('card2');
+      card.innerHTML = `
+        <h4 class="content">${message}</h4>
+      `;
+      document.body.appendChild(card);
 
-  setTimeout(() => {
-    card.remove();
-  }, 2000); 
-}
+      setTimeout(() => {
+        card.remove();
+      }, 2000); 
+    }
 
-    socket.on('userJoined', ({ email, socketId }) => {
+    socket.on('userJoined', ({ email, socketId, allUsers }) => {
+      const storedUser = JSON.parse(localStorage.getItem('liveUser'));
+      if (storedUser && storedUser.allUsers) {
+        joinedUsers = storedUser.allUsers.map(user => user.email);
+      }
       if (!joinedUsers.includes(email)) {
         joinedUsers.push(email);
-        localStorage.setItem('liveUser', JSON.stringify({ email, socketId }));
+        localStorage.setItem('liveUser', JSON.stringify({ email, socketId, allUsers }));
         window.location.href = 'userList.html';
       } else {
         showErrorCard('You are already joined!');
@@ -104,7 +106,7 @@
     </div>
     <div class="card-body">
       <div class="container text-center">
-        <h2 class="mt-2">Enter Register Email Id</h2>
+        <h2 class="mt-2">Enter Registered Email Id</h2>
         
         <div class="mb-3">
           <input type="text" class="text-center form-control" style="border-radius: 8px" id="email" placeholder="Enter your email">
@@ -116,6 +118,5 @@
     </div>
   </div>
   
- 
 </body>
 </html>

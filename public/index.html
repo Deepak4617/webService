@@ -134,7 +134,7 @@
           $('#userForm').removeClass('was-validated');
         },
         error: function (error) {
-          console.log(error);  // Log the error for debugging
+          // console.log(error);
           let errorMessage = 'Server error';
           if (error.responseJSON && error.responseJSON.message) {
             errorMessage = error.responseJSON.message;
